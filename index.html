@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>LDC Wallet</title>
+  <link rel="preconnect" href="https://ldc.scmain.com">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="header-top">
+        <a class="brand" href="#dashboardPanel">
+          <span class="logo-slot"><img src="/logo.png" alt="Logo"></span>
+          <span class="brand-copy">
+            <span class="eyebrow">SCMain</span>
+            <strong>LDC Wallet</strong>
+          </span>
+        </a>
+
+        <div class="header-actions desktop-actions">
+          <button class="header-btn" type="button" data-panel-target="browsePanel">Browse account</button>
+          <button class="header-btn" type="button" data-panel-target="opsPanel">Operations</button>
+          <button class="header-btn" type="button" data-panel-target="guidePanel">Guide</button>
+          <button class="header-btn" type="button" id="headerApiBtn">API</button>
+          <button class="header-btn danger" type="button" id="logoutBtn">Logout</button>
+        </div>
+
+        <button class="header-btn mobile-toggle" type="button" id="mobileNavToggle" aria-expanded="false" aria-controls="headerNav">Menu</button>
+      </div>
+
+      <nav class="header-nav" id="headerNav">
+        <button class="nav-chip active" type="button" data-panel-target="dashboardPanel">Dashboard</button>
+        <button class="nav-chip" type="button" data-panel-target="opsPanel">Operations</button>
+        <button class="nav-chip" type="button" data-panel-target="browsePanel">Browse</button>
+        <button class="nav-chip" type="button" data-panel-target="guidePanel">Guide</button>
+        <button class="nav-chip" type="button" id="mobileApiBtn">API</button>
+        <button class="nav-chip danger" type="button" id="mobileLogoutBtn">Logout</button>
+      </nav>
+    </header>
+
+    <main class="page-grid">
+      <aside class="sidebar">
+        <section class="card auth-card" id="apiCard">
+          <div class="card-head">
+            <div>
+              <h2>API access</h2>
+              <p class="subtle">Stored in cookie for this browser.</p>
+            </div>
+            <span class="status-pill" id="apiStatusText">Missing</span>
+          </div>
+
+          <form id="apiForm" class="stack-form">
+            <label class="api-input-wrap" id="apiInputWrap">
+              <span>API key</span>
+              <input type="password" id="apiInput" autocomplete="off" placeholder="Enter API key">
+            </label>
+            <div class="inline-row">
+              <button type="submit" class="primary-btn">Save API</button>
+              <button type="button" class="ghost-btn" id="showApiBtn">Show</button>
+              <button type="button" class="ghost-btn" id="clearApiBtn">Clear</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card accounts-card">
+          <div class="card-head">
+            <div>
+              <h2>Accounts</h2>
+              <p class="subtle" id="activeAccountMeta">No active account.</p>
+            </div>
+            <button type="button" class="ghost-btn compact-btn" id="refreshActiveBtn">Refresh</button>
+          </div>
+
+          <div class="account-dropdown" id="accountDropdown">
+            <button type="button" class="account-current" id="accountDropdownToggle" aria-expanded="false" aria-controls="accountDropdownMenu">
+              <span>
+                <strong id="activeAccountName">No account</strong>
+                <small id="activeAccountAlias">Open to add one</small>
+              </span>
+              <span class="chevron">▾</span>
+            </button>
+
+            <div class="account-dropdown-menu" id="accountDropdownMenu">
+              <form id="accountForm" class="stack-form add-account-form">
+                <label>
+                  <span>Account name</span>
+                  <input type="text" id="accountNameInput" placeholder="ldp#user">
+                </label>
+                <label>
+                  <span>Label</span>
+                  <input type="text" id="accountAliasInput" placeholder="Main wallet">
+                </label>
+                <button type="submit" class="primary-btn">Add account</button>
+              </form>
+              <div class="account-list" id="accountsList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card quick-card">
+          <div class="card-head">
+            <div>
+              <h2>Quick actions</h2>
+              <p class="subtle">Fast switch for common actions.</p>
+            </div>
+          </div>
+          <div class="quick-grid">
+            <button type="button" class="ghost-btn quick-action" data-operation="send">Send</button>
+            <button type="button" class="ghost-btn quick-action" data-operation="trade">Trade</button>
+            <button type="button" class="ghost-btn quick-action" data-operation="loancreate">Create loan</button>
+            <button type="button" class="ghost-btn quick-action" data-operation="loanaccept">Accept loan</button>
+            <button type="button" class="ghost-btn quick-action" data-operation="loanpay">Repay loan</button>
+            <button type="button" class="ghost-btn quick-action" data-operation="newapi">New API</button>
+            <button type="button" class="ghost-btn quick-action" data-show-all="1">More</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="main-stack">
+        <section class="panel active" id="dashboardPanel">
+          <div class="hero card">
+            <div>
+              <p class="eyebrow">Active wallet</p>
+              <h1 id="dashboardTitle">No account selected</h1>
+              <p class="hero-text" id="dashboardText">Save an API key, add an account, then start using the wallet.</p>
+            </div>
+            <div class="hero-actions">
+              <button type="button" class="primary-btn" id="loadBalancesBtn">Load balances</button>
+              <button type="button" class="ghost-btn" id="loadLoansBtn">Load loans</button>
+              <button type="button" class="ghost-btn" id="loadDebtsBtn">Load debts</button>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="card stats-card">
+              <h2>Wallet state</h2>
+              <div class="stat-list">
+                <article class="stat-item"><span>API</span><strong id="apiStateText">Missing</strong></article>
+                <article class="stat-item"><span>Accounts</span><strong id="accountCountText">0</strong></article>
+                <article class="stat-item"><span>Current account</span><strong id="accountStateText">None</strong></article>
+                <article class="stat-item"><span>Browse target</span><strong id="browseStateText">None</strong></article>
+              </div>
+            </section>
+
+            <section class="card response-card">
+              <div class="card-head">
+                <div>
+                  <h2>Latest response</h2>
+                  <p class="subtle">Human-readable result and API payload.</p>
+                </div>
+                <button type="button" class="ghost-btn compact-btn" id="clearResponseBtn">Clear</button>
+              </div>
+              <div class="response-box" id="responseBox">No requests yet.</div>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel" id="opsPanel">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h2>Operations</h2>
+                <p class="subtle">All supported API functions except addapi.</p>
+              </div>
+            </div>
+            <form id="operationPicker" class="picker-form">
+              <label>
+                <span>Operation type</span>
+                <select id="operationType"></select>
+              </label>
+            </form>
+          </div>
+
+          <div class="card operation-card">
+            <div class="operation-title-wrap">
+              <h2 id="operationTitle">Operation</h2>
+              <p class="subtle" id="operationHelp">Choose an operation.</p>
+            </div>
+            <form id="dynamicOperationForm" class="dynamic-form"></form>
+            <div id="pretradeResult" class="pretrade-box hidden"></div>
+          </div>
+
+          <div class="card table-card">
+            <div class="card-head">
+              <div>
+                <h2>Balances of active account</h2>
+                <p class="subtle">Auto-refresh after balance-changing operations.</p>
+              </div>
+              <button type="button" class="ghost-btn compact-btn" id="reloadLowerBalancesBtn">Reload</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Token</th><th>Balance</th></tr>
+                </thead>
+                <tbody id="activeBalancesBody">
+                  <tr><td colspan="2">No balances loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="browsePanel">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h2>Browse account</h2>
+                <p class="subtle">Set a target once, then balances, loans and debts auto-fill it.</p>
+              </div>
+            </div>
+            <form id="browseForm" class="toolbar-form">
+              <label>
+                <span>User</span>
+                <input type="text" id="browseUserInput" placeholder="ldp#user">
+              </label>
+              <div class="inline-row wrap-row">
+                <button type="submit" class="primary-btn">Use target</button>
+                <button type="button" class="ghost-btn" id="browseRefreshAllBtn">Update all</button>
+                <button type="button" class="ghost-btn" id="browseResetBtn">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="browse-grid">
+            <section class="card table-card">
+              <div class="card-head">
+                <div>
+                  <h2>Balances</h2>
+                  <p class="subtle" id="browseTargetText">No browse target yet.</p>
+                </div>
+                <div class="inline-row compact-row">
+                  <input type="text" id="browseTokenInput" placeholder="Optional token">
+                  <button type="button" class="ghost-btn compact-btn" id="browseBalancesBtn">Load</button>
+                  <button type="button" class="ghost-btn compact-btn" id="exportBalancesBtn">CSV</button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Token</th><th>Balance</th></tr></thead>
+                  <tbody id="balancesTableBody"><tr><td colspan="2">No balances loaded.</td></tr></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card table-card">
+              <div class="card-head">
+                <div>
+                  <h2>Loans</h2>
+                  <p class="subtle">Creditor-side records for chosen user.</p>
+                </div>
+                <div class="inline-row compact-row">
+                  <label class="checkline"><input type="checkbox" id="hideZeroLoansToggle"> Hide 0 loans</label>
+                  <button type="button" class="ghost-btn compact-btn" id="browseLoansBtn">Load</button>
+                  <button type="button" class="ghost-btn compact-btn" id="exportLoansBtn">CSV</button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Borrower</th><th>Amount</th><th>Rate</th><th>Time</th></tr></thead>
+                  <tbody id="loansTableBody"><tr><td colspan="4">No loans loaded.</td></tr></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card table-card">
+              <div class="card-head">
+                <div>
+                  <h2>Debts</h2>
+                  <p class="subtle">Debt scan filtered by chosen user.</p>
+                </div>
+                <div class="inline-row compact-row">
+                  <button type="button" class="ghost-btn compact-btn" id="browseDebtsBtn">Load</button>
+                  <button type="button" class="ghost-btn compact-btn" id="exportDebtsBtn">CSV</button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Creditor</th><th>Borrower</th><th>Debt</th><th>Rate</th></tr></thead>
+                  <tbody id="debtsTableBody"><tr><td colspan="4">No debts loaded.</td></tr></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel" id="guidePanel">
+          <div class="card prose-card">
+            <div class="card-head">
+              <div>
+                <h2>Guide</h2>
+                <p class="subtle">Comfortable wallet flow for desktop and phone.</p>
+              </div>
+            </div>
+            <div class="prose">
+              <p>Save your API key once. After login, the API card is hidden and can be reopened from the header.</p>
+              <p>Add accounts in the compact account dropdown. The list stays hidden by default when you already have an active account.</p>
+              <p>Use Browse account to inspect balances, loans and debts of any user. Update all refreshes the three sections with one click.</p>
+              <p>Optional fields such as max fee in send or token in get balance are omitted automatically when left empty.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <span class="logo-slot footer-logo"><img src="/logo.png" alt="Logo"></span>
+        <div>
+          <strong>LDC Wallet</strong>
+          <p>Commercial-ready browser wallet for SCMain LDC API.</p>
+        </div>
+      </div>
+      <nav class="footer-links">
+        <a href="#guidePanel">About</a>
+        <a href="#guidePanel">FAQ</a>
+        <a href="#guidePanel">Privacy</a>
+        <a href="#guidePanel">Terms of use</a>
+      </nav>
+    </footer>
+  </div>
+  <script src="assets/app.js"></script>
+</body>
+</html>
